@@ -19,6 +19,7 @@ public class FolderFileScanner {
         for(File childFile:files){
              String fileName=childFile.getName();
              if(!fileName.toLowerCase().contains("stats")){
+                // System.out.println("+++++++++"+childFile.getName());
                  Data2DB.write2DB(childFile);
              }
         }

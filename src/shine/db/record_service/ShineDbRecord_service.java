@@ -37,7 +37,7 @@ public class ShineDbRecord_service {
             while(it1.hasNext()){
                Ioc ioc=(Ioc) it1.next();             
                List<Record> record_list=ioc.getRecordList();          
-               CAChannelGet.setFieldsValueForRecords(IP,  record_list);
+             //  CAChannelGet.setFieldsValueForRecords(IP,  record_list);
             }
            
         }

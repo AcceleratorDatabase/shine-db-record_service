@@ -28,12 +28,16 @@ import org.epics.ca.Channels;
 import org.epics.ca.Context;
 import shine.db.record.api.FieldTypeAPI;
 import shine.db.record.api.FieldValueAPI;
+import shine.db.record.api.IocAPI;
 import shine.db.record.api.RecordAPI;
 import shine.db.record.api.RecordTypeAPI;
+import shine.db.record.api.ServerAPI;
 import shine.db.record.common.constants.ConnectSet;
 import shine.db.record.entity.FieldType;
+import shine.db.record.entity.Ioc;
 import shine.db.record.entity.Record;
 import shine.db.record.entity.RecordType;
+import shine.db.record.entity.Server;
 
 /**
  *
@@ -41,10 +45,12 @@ import shine.db.record.entity.RecordType;
  */
 public class CAChannelGet {
 
-    static ExecutorService exec = Executors.newFixedThreadPool(1);
+    // static E  ExecutorService exec = Executors.newCachedThreadPool();xecutorService exec = Executors.newFixedThreadPool(1);
+    // ExecutorService exec = Executors.newFixedThreadPool(1);
+    ExecutorService exec = Executors.newCachedThreadPool();
+    //EPICS_CA_SERVER_PORT默认为5064，map:key--record name  value--record type
 
-    //map:key--record name  value--record type
-    public static Map getRecordType(String IP, ArrayList<String> record_name_list) {
+    /*public static Map getRecordType(String IP, ArrayList<String> record_name_list) {
        // System.out.println(IP);
         Properties properties = new Properties();
         properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), IP);
@@ -79,12 +85,55 @@ public class CAChannelGet {
 
         Channels.close(descriptors);
         context.close();
-        // System.out.println(map);
+       //  System.out.println(map);
+        return map;
+    }*/ //map:key--record name  value--record type
+    public Map getRecordType(String IP, String ioc_name, ArrayList<String> record_name_list) {
+        Ioc ioc = new IocAPI().getByIP_Name(IP, ioc_name);
+        Properties properties = new Properties();
+        String ip = (IP + ":" + ioc.getEpicsCaServerPort()).replaceAll(" ", "");
+        properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), ip);
+        //  properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), "192.168.31.111:5066");
+        //  properties.setProperty(Context.Configuration.EPICS_CA_SERVER_PORT.toString(), ioc.getEpicsCaServerPort());
+        System.out.println(ip);
+        Context context = new Context(properties);
+        Map<String, String> map = new HashMap<String, String>();
+        List<ChannelDescriptor<?>> descriptors = new ArrayList<>();
+        Iterator it = record_name_list.iterator();
+        while (it.hasNext()) {
+            String record_name = it.next().toString();
+            descriptors.add(new ChannelDescriptor<>((record_name + ".RTYP"), String.class));
+        }
+        //   List<Channel<?>> channels = Channels.create(context, descriptors);
+
+        Future<List<Channel<?>>> future = exec.submit(new Callable<List<Channel<?>>>() {
+            public List<Channel<?>> call() {
+                return Channels.create(context, descriptors);
+            }
+        });
+        List<Channel<?>> channels;
+        try {
+            channels = future.get(ConnectSet.Timeout, TimeUnit.MILLISECONDS); //超时200ms
+            for (int i = 0; i < record_name_list.size(); i++) {
+                map.put(record_name_list.get(i), channels.get(i).get().toString());
+            }
+
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+
+            future.cancel(true);
+            System.out.println("connection timeout");
+        } finally {
+            exec.shutdown();
+        }
+
+        Channels.close(descriptors);
+        context.close();
+        System.out.println(map);
         return map;
     }
 
-    //set fields value for one record
-    public static void setFieldsValue(String IP, String record_name) {
+    //set fields value for one record，默认端口是5064
+    /*  public static void setFieldsValue(String IP, String record_name) {
         Properties properties = new Properties();
         properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), IP);
         Context context = new Context(properties);
@@ -146,10 +195,14 @@ public class CAChannelGet {
             System.out.println("The record " + record_name + " does not exist in the database.");
         }
 
-    }
-
+    }*/
     //set fields value for a list of records
-    public static void setFieldsValue(String IP, ArrayList<String> record_name_list) {
+    public  void setFieldsValue(String IP, String ioc_name, ArrayList<String> record_name_list) {
+        Ioc ioc = new IocAPI().getByIP_Name(IP, ioc_name);
+        Properties properties = new Properties();
+        String ip = (IP + ":" + ioc.getEpicsCaServerPort()).replaceAll(" ", "");
+        properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), ip);
+       
         int N = record_name_list.size() / ConnectSet.RecordNumPerTime + 1;
         // System.out.println(N);
         for (int t = 0; t < N; t++) {
@@ -165,9 +218,9 @@ public class CAChannelGet {
             List<FieldType> field_name_list = new ArrayList();
             List<Map<FieldType, String>> fieldMapList = new ArrayList();
             List<Integer> fieldsNum = new ArrayList(); //存放每个record对应的fields数目
-            Properties properties = new Properties();
-            properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), IP);
-            Context context = new Context(properties);
+            // Properties properties = new Properties();
+            //   properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), IP);
+             Context context = new Context(properties);
             List<ChannelDescriptor<?>> descriptors = new ArrayList<>();
             Iterator it = record_name_list_p.iterator();
             while (it.hasNext()) {
@@ -242,8 +295,12 @@ public class CAChannelGet {
 
     }
 
-    public static void setFieldsValueForRecords(String IP, List<Record> record_list_all) {
-
+    public  void setFieldsValueForRecords(String IP,String ioc_name, List<Record> record_list_all) {
+        Ioc ioc = new IocAPI().getByIP_Name(IP, ioc_name);
+        Properties properties = new Properties();
+        String ip = (IP + ":" + ioc.getEpicsCaServerPort()).replaceAll(" ", "");
+        properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), ip);
+        Context context = new Context(properties);
         int N = (int) Math.ceil((double) record_list_all.size() / ConnectSet.RecordNumPerTime);
         // System.out.println(N);
         for (int t = 0; t < N; t++) {
@@ -259,9 +316,9 @@ public class CAChannelGet {
             List<FieldType> field_name_list = new ArrayList();
             List<Map<FieldType, String>> fieldMapList = new ArrayList();
             List<Integer> fieldsNum = new ArrayList(); //存放每个record对应的fields数目
-            Properties properties = new Properties();
-            properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), IP);
-            Context context = new Context(properties);
+          //  Properties properties = new Properties();
+        //    properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), IP);
+           // Context context = new Context(properties);
             List<ChannelDescriptor<?>> descriptors = new ArrayList<>();
             Iterator it = record_list_p.iterator();
             // System.out.println(record_list_p);
@@ -295,7 +352,7 @@ public class CAChannelGet {
                 futures.add(channel.connectAsync());
             }
             try {
-                sleep(ConnectSet.Timeout);
+                sleep(ConnectSet.Timeout*ConnectSet.RecordNumPerTime);
             } catch (InterruptedException ex) {
                 Logger.getLogger(CAChannelGet.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -304,11 +361,11 @@ public class CAChannelGet {
                 Map<FieldType, String> map = new HashMap();
                 //System.out.println(fieldsNum.get(i));
                 for (int j = 0; j < fieldsNum.get(i); j++) {
-                    // System.out.println(channels.get(num).getName() + "---" + channels.get(num).getConnectionState() + "---" + futures.get(num).isDone());
+                    System.out.println(channels.get(num).getName() + "---" + channels.get(num).getConnectionState() + "---" + futures.get(num).isDone());
                     if (futures.get(num).isDone()) {
                         String value = null;
                         try {
-                            value = (String) channels.get(num).get();  
+                            value = (String) channels.get(num).get();
                             //System.out.println(value);
                         } catch (java.lang.RuntimeException e) {
                             value = null;
@@ -323,8 +380,10 @@ public class CAChannelGet {
                 fieldMapList.add(map);
             }
             Channels.close(descriptors);
-            context.close();
+       //     context.close();
             new FieldValueAPI().setFieldsValueForRecordList(record_list_p, fieldMapList);
+          //  context=new Context(properties);
         }
+         context.close();
     }
 }

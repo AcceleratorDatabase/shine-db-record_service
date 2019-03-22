@@ -139,7 +139,8 @@ public class Data2DB {
             rList.add(r);
         }
         //get record tpye from epics channel
-        Map record_type_map = CAChannelGet.getRecordType(ip, recordList);
+        CAChannelGet ca=new CAChannelGet();
+        Map record_type_map = ca.getRecordType(ip,ioc.getName(), recordList);
        // System.out.println(recordList);
         //IOC connection failure
         if (record_type_map.isEmpty()) {
@@ -165,7 +166,7 @@ public class Data2DB {
         BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes(Charset.forName("utf8"))), Charset.forName("utf8")));
         String line;
         //StringBuffer strbuf = new StringBuffer();
-
+       // System.out.println(br);
         String ioc_name = null;
         String install_path = null;
         Date date = null;
@@ -210,7 +211,7 @@ public class Data2DB {
         } catch (IOException ex) {
             Logger.getLogger(Data2DB.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+      //  System.out.println(ip);
         ServerAPI serverAPI = new ServerAPI();
         Server server = serverAPI.getByIP(ip);
 
@@ -248,10 +249,11 @@ public class Data2DB {
         } else {
             ioc = iocAPI.updateIOC(ioc, install_path, date, new Date(), TRUE, EPICS_CA_SERVER_PORT, EPICS_CA_REPEATER_PORT);
         }
-
+       // System.out.println("+++++++++ioc over");
         //record相关信息
         RecordAPI recordAPI = new RecordAPI();
         ArrayList<Record> rList = new ArrayList();
+       // System.out.println(recordList);
         Iterator it = recordList.iterator();
         while (it.hasNext()) {
             String record_name = it.next().toString();
@@ -261,9 +263,12 @@ public class Data2DB {
             }
             rList.add(r);
         }
+      //  System.out.println("++++读record type开始");
         //get record tpye from epics channel
-        Map record_type_map = CAChannelGet.getRecordType(ip, recordList);
-       // System.out.println(recordList);
+     //   System.out.println(ioc.getName());
+        CAChannelGet ca=new CAChannelGet();
+        Map record_type_map = ca.getRecordType(ip,ioc.getName(), recordList);
+     //    System.out.println("++++读record type结束");
         //IOC connection failure
         if (record_type_map.isEmpty()) {
             Iterator it1 = rList.iterator();

@@ -1,6 +1,6 @@
-IOCName:iocfirst
-path:/usr/local/epicsapps/first
-Date:2019/03/07 15:27:56.286491
+IOCName:iocsecond
+path:/usr/local/epicsapps/second
+Date:2019/03/20 16:04:21.013132
 env_params:
 EPICS_AR_PORT: 7002
 EPICS_CAS_AUTO_BEACON_ADDR_LIST is undefined
@@ -18,7 +18,7 @@ EPICS_CA_MAX_ARRAY_BYTES: 16384
 EPICS_CA_MAX_SEARCH_PERIOD: 300.0
 EPICS_CA_NAME_SERVERS is undefined
 EPICS_CA_REPEATER_PORT: 5065
-EPICS_CA_SERVER_PORT: 5064
+EPICS_CA_SERVER_PORT: 5066
 EPICS_CMD_PROTO_PORT is undefined
 EPICS_IOC_LOG_FILE_COMMAND is undefined
 EPICS_IOC_LOG_FILE_LIMIT: 1000000
@@ -30,10 +30,22 @@ EPICS_TS_NTP_INET is undefined
 IOCSH_HISTSIZE: 50
 IOCSH_PS1: epics> 
 record:
-b:aiExample
-a:aSubExample
-b:calcExample
-b:compressExample
-a:subExample
-b:xxxExample
+rootHost:ai1
+rootHost:ai2
+rootHost:ai3
+rootHost:aiExample
+rootHost:aiExample1
+rootHost:aiExample2
+rootHost:aiExample3
+rootHost:aSubExample
+rootHost:calc1
+rootHost:calc2
+rootHost:calc3
+rootHost:calcExample
+rootHost:calcExample1
+rootHost:calcExample2
+rootHost:calcExample3
+rootHost:compressExample
+rootHost:subExample
+rootHost:xxxExample
 IP:192.168.31.111

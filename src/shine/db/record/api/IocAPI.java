@@ -23,6 +23,13 @@ public class IocAPI {
 
     public static EntityManager em = EmProvider.getInstance().getEntityManagerFactory().createEntityManager();
 
+     public List<Ioc> getAllIoc() {
+        Query q;
+        q = em.createNamedQuery("Ioc.findAll");
+        List<Ioc> list = q.getResultList();
+        return list;
+    }
+    
     public Ioc setIOC(Server server, String name, String install_path, Date boot_time, Boolean active) {
         Ioc ioc = new Ioc();
         ioc.setServierId(server);
@@ -102,6 +109,17 @@ public class IocAPI {
     public Ioc getByName(String name) {
         Query q;
         q = em.createNamedQuery("Ioc.findByName").setParameter("name", name);
+        List<Ioc> dList = q.getResultList();
+        if (dList.isEmpty()) {
+            return null;
+        } else {
+            return dList.get(0);
+        }
+    }
+    
+    public Ioc getByIP_Name(String ip,String name) {
+        Query q;
+        q = em.createQuery("select ioc from Ioc ioc where ioc.servierId.ip=:ip and ioc.name=:name").setParameter("ip", ip).setParameter("name", name);
         List<Ioc> dList = q.getResultList();
         if (dList.isEmpty()) {
             return null;

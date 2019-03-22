@@ -42,7 +42,8 @@ import shine.db.record.entity.Server;
  */
 public class IOCStatsGet {
 
-    static ExecutorService exec = Executors.newFixedThreadPool(1);
+    // static ExecutorService exec = Executors.newFixedThreadPool(1);
+    ExecutorService exec = Executors.newCachedThreadPool();    
 
     public String getIOCStatsName(String path) {
         String s = Read2String.read(path);
@@ -62,7 +63,7 @@ public class IOCStatsGet {
         return name;
     }
 
-    public void setEpicsEnv(String IP, String path) {
+    public void setEpicsEnv(String IP, String path) {      
         String name = this.getIOCStatsName(path);
         Properties properties = new Properties();
         properties.setProperty(Context.Configuration.EPICS_CA_ADDR_LIST.toString(), IP);
@@ -70,12 +71,12 @@ public class IOCStatsGet {
         List<ChannelDescriptor<?>> descriptors = new ArrayList<>();
         Map<String, String> map = new HashMap<String, String>();
         for (Map.Entry<String, String> entry : EpicsEnvName.ENVLIST.entrySet()) {
-           // System.out.println(name + entry.getValue());
+            // System.out.println(name + entry.getValue());
             descriptors.add(new ChannelDescriptor<>((name + entry.getValue()), String.class));
         }
-     
+
         Future<List<Channel<?>>> future = exec.submit(new Callable<List<Channel<?>>>() {
-            public List<Channel<?>> call() {              
+            public List<Channel<?>> call() {
                 return Channels.create(context, descriptors);
             }
         });
@@ -96,7 +97,7 @@ public class IOCStatsGet {
         Channels.close(descriptors);
         Server s = new ServerAPI().getByIP(IP);
         //System.out.println(map);
-        new EpicsEnvAPI().setEpicsEnv(s, map);        
+        new EpicsEnvAPI().setEpicsEnv(s, map);
         context.close();
     }
 }
