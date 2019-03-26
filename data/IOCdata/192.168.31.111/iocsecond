@@ -1,0 +1,50 @@
+IOCName:iocsecond
+path:/usr/local/epicsapps/second
+Date:2019/03/26 15:36:07.887113
+env_params:
+EPICS_AR_PORT: 7002
+EPICS_CAS_AUTO_BEACON_ADDR_LIST is undefined
+EPICS_CAS_BEACON_ADDR_LIST is undefined
+EPICS_CAS_BEACON_PERIOD is undefined
+EPICS_CAS_BEACON_PORT is undefined
+EPICS_CAS_IGNORE_ADDR_LIST is undefined
+EPICS_CAS_INTF_ADDR_LIST is undefined
+EPICS_CAS_SERVER_PORT is undefined
+EPICS_CA_ADDR_LIST is undefined
+EPICS_CA_AUTO_ADDR_LIST: YES
+EPICS_CA_BEACON_PERIOD: 15.0
+EPICS_CA_CONN_TMO: 30.0
+EPICS_CA_MAX_ARRAY_BYTES: 16384
+EPICS_CA_MAX_SEARCH_PERIOD: 300.0
+EPICS_CA_NAME_SERVERS is undefined
+EPICS_CA_REPEATER_PORT: 5065
+EPICS_CA_SERVER_PORT: 5066
+EPICS_CMD_PROTO_PORT is undefined
+EPICS_IOC_LOG_FILE_COMMAND is undefined
+EPICS_IOC_LOG_FILE_LIMIT: 1000000
+EPICS_IOC_LOG_FILE_NAME is undefined
+EPICS_IOC_LOG_INET is undefined
+EPICS_IOC_LOG_PORT: 7004
+EPICS_TIMEZONE: CUS::360:031302:110602
+EPICS_TS_NTP_INET is undefined
+IOCSH_HISTSIZE: 50
+IOCSH_PS1: epics> 
+record:
+rootHost:ai1
+rootHost:ai2
+rootHost:ai3
+rootHost:aiExample
+rootHost:aiExample1
+rootHost:aiExample2
+rootHost:aiExample3
+rootHost:aSubExample
+rootHost:calc1
+rootHost:calc2
+rootHost:calc3
+rootHost:calcExample
+rootHost:calcExample1
+rootHost:calcExample2
+rootHost:calcExample3
+rootHost:compressExample
+rootHost:subExample
+rootHost:xxxExample

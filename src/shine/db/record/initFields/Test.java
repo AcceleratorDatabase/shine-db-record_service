@@ -16,7 +16,7 @@ import shine.db.record.api.FieldTypeAPI;
  */
 public class Test {
     public static void main(String[] args){
-       File f=new File("D:\\NetBeansProjects\\shine-db-record_service\\data\\Initial Fields.xlsx");
+       File f=new File("E:\\NetBeansProjects\\shine-db-record_service\\data\\Initial Fields.xlsx");
      //  Workbook wb=ExcelTool.getWorkbook(f);
      //  ReadExcel.getSheetAt(wb, 0);*/
        Excel2DB.setAllFIelds(f);

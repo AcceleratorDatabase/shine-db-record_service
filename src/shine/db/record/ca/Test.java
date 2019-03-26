@@ -5,6 +5,8 @@
  */
 package shine.db.record.ca;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -22,7 +24,6 @@ import shine.db.record.entity.FieldValue;
 import shine.db.record.entity.Ioc;
 import shine.db.record.entity.Record;
 
-
 /**
  *
  * @author Lvhuihui
@@ -30,16 +31,31 @@ import shine.db.record.entity.Record;
 public class Test {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
+      
+        CAChannelGet ca=new CAChannelGet();
+        IocAPI iocAPI=new IocAPI();
+        List<Ioc> iocList=iocAPI.getAllIoc();
+        Iterator it=iocList.iterator();
+        while(it.hasNext()){
+            Ioc ioc=(Ioc) it.next();
+            List<Record> rList=ioc.getRecordList();
+            //System.out.println(ioc.getName()+rList.size());
+            ca.setFieldsValueForRecords(ioc.getServierId().getIp(), ioc.getName(),rList);
+        }
         
-                    
-       String ip="10.40.18.143";
-        /*Ioc ioc=new IocAPI().getByName("iocfirst");
-        List<Record> rList=ioc.getRecordList();
-        CAChannelGet.setFieldsValueForRecords(ip, rList);*/
-     
-       IOCStatsGet iocStats=new IOCStatsGet();
-      System.out.println(iocStats.getIOCStatsName("D:\\NetBeansProjects\\shine-db-record_service\\data\\IOCdata\\iocStats"));
-       iocStats.setEpicsEnv(ip, "D:\\NetBeansProjects\\shine-db-record_service\\data\\IOCdata\\iocStats");
-     
+      
+
+       
+       // ca.getRecordType(ip, "iocfirst", a);
+       //  List<Record> rList=ioc.getRecordList();
+        // Record r=rList.get(1);
+        // System.out.println(r.getName());
+        // rList.clear();
+        // rList.add(r);
+        //  CAChannelGet.setFieldsValueForRecords(ip, rList);
+
+      //    IOCStatsGet iocStats=new IOCStatsGet();
+       //   System.out.println(iocStats.getIOCStatsName("E:\\NetBeansProjects\\shine-db-record_service\\data\\IOCdata\\iocStats"));
+      //     iocStats.setEpicsEnv(ip, "E:\\NetBeansProjects\\shine-db-record_service\\data\\IOCdata\\iocStats");
     }
 }
