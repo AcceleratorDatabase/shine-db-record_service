@@ -28,7 +28,6 @@ public class FolderFileScanner {
                         Data2DB.write2DB(ip, childFile);
                     } else {
                         IOCStatsGet iocStats = new IOCStatsGet();
-
                         iocStats.setEpicsEnv(ip, childFile.getAbsolutePath());
                     }
 
